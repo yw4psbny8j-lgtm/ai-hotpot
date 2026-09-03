@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Hotpot | 智能热点识别</title>
+    <meta name="description" content="AI Hotpot 可视化热点识别平台，支持 AI Code With 接入与离线降级分析。" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo">✦</div>
+          <span>AI Hotpot</span>
+        </div>
+
+        <div class="topbar-right">
+          <div class="header-stats">
+            <div class="stat-chip">
+              <span class="stat-label">总分析</span>
+              <strong id="analysisCount">0</strong>
+            </div>
+            <div class="stat-chip">
+              <span class="stat-label">平均热度</span>
+              <strong id="avgScore">0%</strong>
+            </div>
+          </div>
+
+          <div class="status-pill">
+            <span class="status-dot"></span>
+            Live intelligence
+          </div>
+        </div>
+      </header>
+
+      <div class="dashboard">
+        <aside class="sidebar">
+          <section class="panel">
+            <h3>观察指标</h3>
+            <div class="metric-grid">
+              <div class="metric-box cyan">
+                <span class="label">热度</span>
+                <span class="value">92%</span>
+              </div>
+              <div class="metric-box purple">
+                <span class="label">覆盖</span>
+                <span class="value">86%</span>
+              </div>
+              <div class="metric-box pink">
+                <span class="label">增长</span>
+                <span class="value">74%</span>
+              </div>
+              <div class="metric-box amber">
+                <span class="label">落地</span>
+                <span class="value">68%</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h3>关键看板</h3>
+            <ul class="kpi-list">
+              <li><span>市场趋势</span><strong>强</strong></li>
+              <li><span>AI 落地</span><strong>高</strong></li>
+              <li><span>资本关注</span><strong>中</strong></li>
+              <li><span>政策风险</span><strong>低</strong></li>
+            </ul>
+          </section>
+        </aside>
+
+        <main class="main">
+          <section class="hero">
+            <div class="hero-copy">
+              <h1>识别<b class="gradient-text">热点</b>，抓住下一波增长</h1>
+              <p>
+                从文本、行业新闻或业务备注中抽取关键议题，帮助团队快速判断什么值得追踪、什么值得投入。
+              </p>
+            </div>
+            <div class="hero-visual" aria-hidden="true">
+              <div class="orb one"></div>
+              <div class="orb two"></div>
+              <div class="orb three"></div>
+            </div>
+          </section>
+
+          <section class="analysis-panel">
+            <div class="input-card">
+              <div class="form-header">
+                <h2>热点分析输入</h2>
+                <div class="inline-controls">
+                  <button class="secondary" id="sampleBtn" type="button">示例文本</button>
+                </div>
+              </div>
+
+              <div class="input-row-label">AI Code With API Key <span>可选，用于启用 AI 分析</span></div>
+              <div class="input-row">
+                <input id="apiKey" class="input" type="password" placeholder="AI Code With API Key（可选）" />
+                <select id="model" class="select">
+                  <option value="deepseek-v4-flash">DeepSeek V4 Flash</option>
+                  <option value="deepseek-v4-pro">DeepSeek V4 Pro</option>
+                </select>
+              </div>
+
+              <div id="apiHint" class="api-hint">
+                <div class="api-hint-icon">💡</div>
+                <div class="api-hint-content">
+                  <strong>离线模式已启用</strong>
+                  <p>未配置 API Key 时，系统将使用本地算法进行热点分析。如需更精准的 AI 分析，请在上方填写 AI Code With API Key。</p>
+                </div>
+              </div>
+
+              <textarea id="content" class="textarea" placeholder="在这里输入需要分析的行业趋势、新闻、业务描述，或市场材料..."></textarea>
+
+              <div class="news-source-section">
+                <div class="news-source-row">
+                  <label>AI 新闻源：</label>
+                  <select id="newsSource" class="select">
+                    <option value="github_trending">GitHub Trending AI 项目</option>
+                    <option value="hacker_news">Hacker News AI 话题</option>
+                    <option value="all">综合（两个都获取）</option>
+                  </select>
+                  <button class="ghost small" id="fetchNewsBtn" type="button">获取最新</button>
+                </div>
+              </div>
+
+              <div id="newsPanel" class="news-panel" style="display:none;">
+                <div class="news-panel-header">
+                  <h4 id="newsPanelTitle">AI 新闻动态</h4>
+                  <span id="newsCount" class="news-count"></span>
+                </div>
+                <div id="newsList" class="news-list"></div>
+              </div>
+
+              <div class="progress-wrap" aria-live="polite">
+                <div class="progress-track">
+                  <span id="progressBar" class="progress-bar"></span>
+                </div>
+              </div>
+
+              <div class="actions">
+                <select id="skillSelect" class="skill-select" aria-label="技能选择">
+                  <option value="hotspot_extraction">热点提取</option>
+                  <option value="topic_summary">话题摘要</option>
+                  <option value="risk_assessment">风险评估</option>
+                  <option value="competitor_analysis">竞品分析</option>
+                </select>
+                <button class="primary" id="analyzeBtn" type="button">开始识别热点</button>
+                <button class="secondary" id="exportBtn" type="button">导出 JSON</button>
+                <button class="ghost" id="clearBtn" type="button">清空</button>
+              </div>
+
+              <div id="status" class="status-box">等待输入内容...</div>
+            </div>
+
+            <div class="result-card">
+              <h3>热点识别结果</h3>
+              <div id="hotspotList" class="hotspot-list">
+                <div class="empty-state">暂无热点数据，先输入内容再执行分析。</div>
+              </div>
+
+              <div class="summary-box">
+                <h4>摘要</h4>
+                <p id="summaryText">等待分析输入...</p>
+              </div>
+            </div>
+
+            <aside class="history-panel">
+              <div class="history-header">
+                <h3>历史记录</h3>
+              </div>
+              <div id="historyList" class="history-list">
+                <div class="empty-state small">暂无历史分析。</div>
+              </div>
+            </aside>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
