@@ -794,14 +794,10 @@ async function analyzeWithOpenRouter() {
     return;
   }
 
-  // 调试信息
-  console.log('API Key 长度:', apiKey.length);
-  console.log('选择的模型:', model);
+
   
   // 清理 API Key，只移除前后空格和不可见字符
   const cleanApiKey = apiKey.trim().replace(/[\s\x00-\x1F\x7F]/g, '');
-  console.log('清理后的 API Key 长度:', cleanApiKey.length);
-  console.log('API Key 前6位:', cleanApiKey.substring(0, 6) + '...');
   
   const skillPrompt = getSkillPrompt(skill, text);
   setStatus(`正在调用 AI Code With 执行 ${SKILL_LABELS[skill]}...`, true);
@@ -819,11 +815,7 @@ async function analyzeWithOpenRouter() {
       temperature: 0.4,
       response_format: { type: 'json_object' }
     });
-    
-    console.log('请求 URL:', 'https://api.aicodewith.ai/v1/chat/completions');
-    console.log('请求模型:', model);
-    console.log('Authorization:', `Bearer ${cleanApiKey.substring(0, 10)}...`);
-    
+
     const response = await fetch('https://api.aicodewith.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
